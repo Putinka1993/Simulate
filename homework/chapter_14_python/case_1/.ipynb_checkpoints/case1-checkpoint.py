@@ -110,8 +110,122 @@ auto_renewal_sub('auto_purchase.log')
 
 
 
+# Задача 3
+
+# Напишите функцию sub_renewal_by_day, которая принимает на вход путь к файлу с логами и анализирует взаимосвязь дня продления подписки и количества продлений в этот день. Функция должна записать в файл weekdays.txt аналитическую записку в формате:
+
+# Количество обновлений подписки по дням недели:
+# Понедельник: 6
+# Вторник: 7
+# Среда: 8
+# ...
 
 
+# ps , ох намучился я с этой задачей , причем буквально когда понял что у меня не получается подогнать ответ (я был близко) начал делать с друзьями которые и скажу так что они дали аналогичные решения моим , друзья же работают непосредственно аналитиками (сбер и автокомпания)
+
+# и вот мое решение , в нем одна ошибка в СРЕДЕ , у меня меньше на 1 (число 1) и лишняя строка , хотя что ей там делать ;)
+
+
+def sub_renewal_by_day_simple(file_path):
+    log_df = pd.read_csv(
+        file_path,
+        sep=r"\|",
+        engine="python",
+        names=["level", "timestamp", "file", "line", "message"]
+    )
+    
+    
+    mask = log_df['message'].str.contains('Обновляем подписку пользователю id:', na=False)
+    renewals = log_df[mask].copy()
+    
+    renewals['timestamp_dt'] = pd.to_datetime(renewals['timestamp'])
+    renewals['weekday'] = renewals['timestamp_dt'].dt.weekday
+    
+    result_df = renewals.groupby('weekday').size().reset_index(name='subscriptions')
+
+    weekday_names = {
+        0: 'Понедельник',
+        1: 'Вторник',
+        2: 'Среда',
+        3: 'Четверг',
+        4: 'Пятница', 
+        5: 'Суббота',
+        6: 'Воскресенье'
+    }
+    
+    with open('weekdays.txt', 'w', encoding='utf-8') as f:
+      f.write("Количество обновлений подписки по дням недели:\n")
+      
+      lines = []
+      for idx, row in result_df.iterrows():
+          day_name = weekday_names[row['weekday']]
+          lines.append(f"{day_name}: {row['subscriptions']}")
+          
+      f.write('\n'.join(lines))
+
+
+    return result_df
+
+sub_renewal_by_day('auto_purchase.log')
+
+
+# ответ
+
+# Количество обновлений подписки по дням недели:
+# Понедельник: 136
+# Вторник: 144
+# Среда: 161
+# Четверг: 169
+# Пятница: 145
+# Суббота: 135
+# Воскресенье: 143
+
+
+# но так как он не считается правильным ( условно по автотестам ) я попросил эталонное решение 
+
+def sub_renewal_by_day(file_path):
+    # Считываем данные из файла
+    logs = []
+    with open(file_path, 'r') as f:
+        logs.extend(f.readlines())
+    parts = [[part.strip() for part in log.split('|')] for log in logs]
+
+    # Извлекаем информацию из логов
+    data = [{'timestamp': datetime.datetime.strptime(part[1], '%Y-%m-%d %H:%M:%S,%f'),
+             'message': part[4].replace("[demon] ", "").strip(),
+             'system': part[0]}
+            for part in parts]
+
+    # Проверяем количество ошибок при списании к успешным продлениям
+    success_count = [data[i] for i in range(len(data))
+                     if 'Обновляем подписку пользователю id:' in data[i]['message'] and
+                        (i == len(data)-1 or 'ошибка при списании' not in data[i+1]['message'])]
+
+    failure_count = [data[i+1] for i in range(len(data)-1)
+                     if 'ошибка при списании' in data[i+1]['message'] and
+                        'Обновляем подписку пользователю id:' in data[i]['message']]
+
+    # 2. Группируем данные по дням недели и времени суток обновления подписки
+    day_of_week_count = {0: 0, 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0}
+    for d in success_count:
+        day_of_week_count[d['timestamp'].weekday()] += 1
+
+    weekdays = {
+        0: 'Понедельник',
+        1: 'Вторник',
+        2: 'Среда',
+        3: 'Четверг',
+        4: 'Пятница',
+        5: 'Суббота',
+        6: 'Воскресенье'
+    }
+
+    with open('weekdays.txt', 'w') as f:
+        print('Количество обновлений подписки по дням недели:', file=f)
+        for day, count in day_of_week_count.items():
+            print(f'{weekdays[day]}: {count}', file=f)
+
+sub_renewal_by_day('auto_purchase.log')
 
 
 
