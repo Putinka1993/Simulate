@@ -118,7 +118,7 @@ res3
 path_file = 'sessions.csv'
 
 def get_average_session_count(file_csv):
-
+  
 
   df = pd.read_csv(file_csv)
 
