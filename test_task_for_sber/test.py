@@ -2,14 +2,16 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.common.action_chains import ActionChains
 import time
 import pandas as pd
 import re
 
+# Используем твой профиль Chrome
 options = webdriver.ChromeOptions()
 options.add_argument("--disable-blink-features=AutomationControlled")
 options.add_experimental_option("excludeSwitches", ["enable-automation"])
+options.add_argument("--user-data-dir=/Users/vladislavlipkin/Library/Application Support/Google/Chrome")
+options.add_argument("--profile-directory=Default")
 
 driver = webdriver.Chrome(options=options)
 driver.get("https://kad.arbitr.ru/")
@@ -24,16 +26,10 @@ inn_input.send_keys("7736323532")
 # Кнопка поиска
 search_button = driver.find_element(By.CSS_SELECTOR, "button[type='submit']")
 search_button.click()
-
-# Ждем ручного прохода капчи
-input("Пройдите капчу в браузере и нажмите Enter...")
-
-# После прохода капчи ждем загрузки
 time.sleep(5)
 
 data1 = []
 data2 = []
-actions = ActionChains(driver)
 page = 1
 
 while True:
@@ -54,41 +50,36 @@ while True:
     for case_number, case_url, case_id, row in cases_on_page:
         try:
             # Истец
-            plaintiff_elem = row.find_element(By.CSS_SELECTOR, "td.plaintiff .js-rollover")
-            actions.move_to_element(plaintiff_elem).perform()
-            time.sleep(0.3)
-            
             plaintiff_inn = None
             plaintiff_name = ""
-            tooltips = driver.find_elements(By.CSS_SELECTOR, ".b-rollover:not([style*='display: none'])")
-            if tooltips:
-                tooltip_text = tooltips[0].text
-                inn_match = re.search(r'ИНН:\s*(\d+)', tooltip_text)
+            try:
+                plaintiff_elem = row.find_element(By.CSS_SELECTOR, "td.plaintiff .js-rollover")
+                tooltip_html = plaintiff_elem.get_attribute("innerHTML")
+                inn_match = re.search(r'ИНН:\s*(\d+)', tooltip_html)
                 if inn_match:
                     plaintiff_inn = inn_match.group(1)
-                plaintiff_name = tooltip_text.split("\n")[0]
+                name_match = re.search(r'<strong>(.*?)</strong>', tooltip_html)
+                if name_match:
+                    plaintiff_name = name_match.group(1)
+            except:
+                pass
             
             # Ответчик
-            respondent_elem = row.find_element(By.CSS_SELECTOR, "td.respondent .js-rollover")
-            actions.move_to_element(respondent_elem).perform()
-            time.sleep(0.3)
-            
             respondent_inn = None
             respondent_name = ""
-            tooltips = driver.find_elements(By.CSS_SELECTOR, ".b-rollover:not([style*='display: none'])")
-            if tooltips:
-                tooltip_text = tooltips[0].text
-                inn_match = re.search(r'ИНН:\s*(\d+)', tooltip_text)
+            try:
+                respondent_elem = row.find_element(By.CSS_SELECTOR, "td.respondent .js-rollover")
+                tooltip_html = respondent_elem.get_attribute("innerHTML")
+                inn_match = re.search(r'ИНН:\s*(\d+)', tooltip_html)
                 if inn_match:
                     respondent_inn = inn_match.group(1)
-                respondent_name = tooltip_text.split("\n")[0]
+                name_match = re.search(r'<strong>(.*?)</strong>', tooltip_html)
+                if name_match:
+                    respondent_name = name_match.group(1)
+            except:
+                pass
             
-        except Exception as e:
-            print(f"Ошибка при парсинге участников: {e}")
-            plaintiff_inn = plaintiff_name = respondent_inn = respondent_name = ""
-        
-        # Переход в карточку
-        try:
+            # Переход в карточку
             driver.get(case_url)
             time.sleep(2)
             
