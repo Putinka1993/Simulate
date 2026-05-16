@@ -102,23 +102,83 @@ LEFT JOIN orders o ON c.id = o.customer_id;
 
 ---
 
-## 3. UNION, INTERSECT, EXCEPT
+## 3. UNION, INTERSECT, EXCEPT (работа с множествами)
+
+Все три оператора работают с **двумя результатами запросов** (у них должно быть одинаковое количество и типы колонок).
+
+### Визуальная разница (круги Эйлера)
+
+```
+    A          B
+   ┌─┐        ┌─┐
+   │1│      ┌─┤2├─┐
+   │2├──────┤ │3│ │
+   │3│      └─┤4├─┘
+   └─┘        └─┘
+```
+
+| Оператор | Что делает | На примере |
+|----------|-----------|------------|
+| **UNION** | Всё из А и В (объединение) | {1,2,3,4} |
+| **INTERSECT** | Только общее (пересечение) | {2,3} |
+| **EXCEPT** | В А, но не в В (разность) | {1} |
+
+---
+
+### UNION — объединяет всё
 
 ```sql
 SELECT name FROM employees
-UNION                                    -- без дублей
+UNION                                    -- без дубликатов
 SELECT name FROM managers;
 
+-- UNION ALL — с дубликатами (быстрее)
 SELECT name FROM employees
-INTERSECT                                -- только в обоих
-SELECT name FROM managers;
-
-SELECT name FROM employees
-EXCEPT                                   -- в первом, но не во втором
+UNION ALL
 SELECT name FROM managers;
 ```
 
+**Запоминалка:** UNION = «объединение» → собираем **всё** из обоих.
+
 ---
+
+### INTERSECT — только общее
+
+```sql
+SELECT name FROM employees
+INTERSECT                                -- только те, кто и там, и там
+SELECT name FROM managers;
+```
+
+**Запоминалка:** INTERSECT = «пересечение» → оставляем **только общее**.
+
+---
+
+### EXCEPT — чего нет во втором
+
+```sql
+SELECT name FROM employees
+EXCEPT                                   -- сотрудники, которые НЕ менеджеры
+SELECT name FROM managers;
+```
+
+**Запоминалка:** EXCEPT = «исключая» → берём из А **исключая** то, что есть в В.
+
+---
+
+### Важные правила
+
+1. **Количество колонок** в обоих `SELECT` должно быть одинаковым
+2. **Типы данных** колонок должны совместимы
+3. **Порядок колонок** влияет на сравнение (сравнивается первая с первой, вторая со второй...)
+4. `ORDER BY` пишется **в самом конце**, после последнего `SELECT`
+
+```sql
+(SELECT name FROM employees)
+UNION
+(SELECT name FROM managers)
+ORDER BY name;   -- ORDER BY один на весь результат
+```
 
 ## 4. CTE (Common Table Expression)
 
