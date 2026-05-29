@@ -1,0 +1,207 @@
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Смета на основе BIM-данных</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 20px;
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 10px;
+        }
+        .date {
+            text-align: right;
+            color: #7f8c8d;
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th {
+            background-color: #3498db;
+            color: white;
+            padding: 12px;
+            text-align: center;
+            font-weight: bold;
+        }
+        td {
+            padding: 10px;
+            text-align: right;
+            border-bottom: 1px solid #ddd;
+        }
+        td:first-child, td:nth-child(2) {
+            text-align: left;
+        }
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        tr:hover {
+            background-color: #f1f1f1;
+        }
+        .grand-total {
+            font-size: 20px;
+            font-weight: bold;
+            text-align: right;
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #ecf0f1;
+            border-radius: 8px;
+            color: #27ae60;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            color: #95a5a6;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Смета на основе BIM-данных</h1>
+        <div class="date">28.05.2026 16:16:44</div>
+        
+        <table>
+            <thead>
+                <tr>
+                    <th>№</th>
+                    <th>Наименование работ</th>
+                    <th>Кол-во</th>
+                    <th>Ед. изм.</th>
+                    <th>Материал (руб)</th>
+                    <th>Работа (руб)</th>
+                    <th>Итого (руб)</th>
+                </tr>
+            </thead>
+            <tbody>
+                
+                <tr>
+                    <td>1</td>
+                    <td>Монтаж каркасов зданий рамных коробчатого сечения (сталь С 245)</td>
+                    <td>11.032</td>
+                    <td>
+                        
+                            т
+                        
+                    </td>
+                    <td>606760.00</td>
+                    <td>386120.00</td>
+                    <td><strong>992880.00</strong></td>
+                </tr>
+                
+                <tr>
+                    <td>2</td>
+                    <td>Монтаж каркасов зданий рамных коробчатого сечения (Сталь С 345)</td>
+                    <td>5.837</td>
+                    <td>
+                        
+                            т
+                        
+                    </td>
+                    <td>350220.00</td>
+                    <td>204295.00</td>
+                    <td><strong>554515.00</strong></td>
+                </tr>
+                
+                <tr>
+                    <td>3</td>
+                    <td>Устройство кровли из  профнастила Н75-750-0,8</td>
+                    <td>739.000</td>
+                    <td>
+                        
+                            м²
+                        
+                    </td>
+                    <td>628150.00</td>
+                    <td>295600.00</td>
+                    <td><strong>923750.00</strong></td>
+                </tr>
+                
+                <tr>
+                    <td>4</td>
+                    <td>Абразивоструйная очистка до степени 2 по ГОСТ 9.402-80</td>
+                    <td>424.000</td>
+                    <td>
+                        
+                            т
+                        
+                    </td>
+                    <td>63600.00</td>
+                    <td>84800.00</td>
+                    <td><strong>148400.00</strong></td>
+                </tr>
+                
+                <tr>
+                    <td>5</td>
+                    <td>Огрунтовка металлических поверхностей за один раз грунтовкой ФЛ-03К</td>
+                    <td>424.000</td>
+                    <td>
+                        
+                            т
+                        
+                    </td>
+                    <td>42400.00</td>
+                    <td>33920.00</td>
+                    <td><strong>76320.00</strong></td>
+                </tr>
+                
+                <tr>
+                    <td>6</td>
+                    <td>Окраска металлических огрунтованных поверхностей эмалью ХВ-124 (Покрытие Hardtop Flexi)</td>
+                    <td>424.000</td>
+                    <td>
+                        
+                            т
+                        
+                    </td>
+                    <td>106000.00</td>
+                    <td>72080.00</td>
+                    <td><strong>178080.00</strong></td>
+                </tr>
+                
+                <tr>
+                    <td>7</td>
+                    <td>Окраска металлических огрунтованных поверхностей пастой огнезащитным покрытием  Sternfire St</td>
+                    <td>424.000</td>
+                    <td>
+                        
+                            т
+                        
+                    </td>
+                    <td>305280.00</td>
+                    <td>152640.00</td>
+                    <td><strong>457920.00</strong></td>
+                </tr>
+                
+            </tbody>
+        </table>
+        
+        <div class="grand-total">
+            ОБЩАЯ СТОИМОСТЬ: 3331865.00 руб
+        </div>
+        
+        <div class="footer">
+            Расчёт выполнен на основе BIM-выгрузки
+        </div>
+    </div>
+</body>
+</html>
